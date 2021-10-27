@@ -1,0 +1,29 @@
+.container {
+    width: 75%;
+    height: 75vh;
+    border-radius: 20px;
+    border: 2px solid black;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    overflow: hidden;
+
+    & .chat {
+        padding: 20px;
+        width: 100%;
+        height: 100%;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    & .input {
+        background-color: rgba(128, 128, 128, 0.315);
+        height: 100px;
+        & .inner {
+            width: 100%;
+            height: 100%;
+            resize: none;
+        }
+    }
+}
