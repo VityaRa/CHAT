@@ -6,8 +6,8 @@ export const UsersList = () => {
     <div className={style.container}>
       <h2>Активные пользователи: </h2>
       <div className={style.list}>
-        {usersList.map((user) => (
-          <p className={style.item}>{user.name}</p>
+        {usersList.map((user, index) => (
+          <p key={index} className={style.item}>{user.name}</p>
         ))}
       </div>
     </div>

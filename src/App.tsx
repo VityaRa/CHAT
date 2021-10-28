@@ -9,16 +9,21 @@ import { Sign } from "./components/SignIn";
 function App() {
   const { user } = useAppSelector((state: RootState) => state);
 
+  const id = "123123";
+
   return (
     <div className={style.container}>
       <Switch>
         <Route path="/sign">
           <Sign />
         </Route>
-        <Route path="/room:id">
-          <Chat />
+
+        <Route path="/room/:id">
+          {!user.id ? <Redirect to="/sign" /> : <Chat />}
         </Route>
-        <Route path="/">{!user.id ? <Redirect to="/sign" /> : <Chat />}</Route>
+        <Route exact>
+          {!user.id ? <Redirect to="/sign" /> : <Redirect to={`/room/${id}`} />}
+        </Route>
       </Switch>
     </div>
   );

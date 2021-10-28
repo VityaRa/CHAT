@@ -12,6 +12,10 @@
         overflow-y: scroll;
         & .item {
             margin-right: 10px;
+            background-color: #333336;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 10px;
             &:last-child {
                 margin-right: 0;
             }

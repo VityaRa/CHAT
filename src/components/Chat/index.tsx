@@ -1,4 +1,5 @@
 import { Button, Input } from "antd";
+import { useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { messages } from "../../utils/constants";
 import { Message } from "../Message";
@@ -8,6 +9,8 @@ const { TextArea } = Input;
 
 export const Chat = () => {
   const { id } = useParams<{ id?: string }>();
+  const [message, setMessage] = useState("")
+
 
   return (
     <div className={style.wrapper}>
@@ -24,6 +27,8 @@ export const Chat = () => {
           <TextArea
             className={style.inner}
             placeholder={"Введите сообщение"}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
           ></TextArea>
         </div>
         <Button>Отправить сообщение</Button>

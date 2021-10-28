@@ -22,6 +22,8 @@ export const Sign = () => {
         socket.emit("name", name);
         history.push("/")
       });
+      //socket.on("room:join")
+      //set roomId
       setName("");
     }
   };
