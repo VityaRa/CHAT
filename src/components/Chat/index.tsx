@@ -1,21 +1,39 @@
 import { Button, Input } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
+import { Socket } from "socket.io-client";
 import { messages } from "../../utils/constants";
 import { Message } from "../Message";
-import { UsersList } from "../UsersList";
+import UsersList from "../UsersList";
 import style from "./style.module.scss";
 const { TextArea } = Input;
 
-export const Chat = () => {
-  const { id } = useParams<{ id?: string }>();
-  const [message, setMessage] = useState("")
+export interface IProps {
+  socket: Socket<any, any>;
+}
 
+export const Chat = ({ socket }: IProps) => {
+  const { id } = useParams<{ id: string }>();
+  const [message, setMessage] = useState("");
+
+  const sendMessage = () => {
+    if (message.trim()) {
+      //send message
+    }
+  };
+
+  const joinRoom = (roomId: string) => {
+    console.log(id);
+  };
+
+  useEffect(() => {
+    joinRoom(id);
+  }, [id]);
 
   return (
     <div className={style.wrapper}>
       <div className={style.user_list}>
-        <UsersList />
+        <UsersList socket={socket} />
       </div>
       <div className={style.container}>
         <div className={style.chat}>
@@ -31,7 +49,7 @@ export const Chat = () => {
             onChange={(e) => setMessage(e.target.value)}
           ></TextArea>
         </div>
-        <Button>Отправить сообщение</Button>
+        <Button onClick={sendMessage}>Отправить сообщение</Button>
       </div>
     </div>
   );

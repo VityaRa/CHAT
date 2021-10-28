@@ -1,30 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import style from "./style.module.scss";
-import { useAppSelector } from "./app/hooks";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { RootState } from "./app/store";
 import { Chat } from "./components/Chat";
 import { Sign } from "./components/SignIn";
+import openSocket from "socket.io-client";
+import { Modal } from "./components/Modal";
+import { toggleModal } from "./app/reducers/app";
+
+const socket = openSocket("http://localhost:4000");
 
 function App() {
-  const { user } = useAppSelector((state: RootState) => state);
+  const { id, roomId, name, isModalActive } = useAppSelector(
+    (state: RootState) => state.app
+  );
+  const dispatch = useAppDispatch();
 
-  const id = "123123";
+  useEffect(() => {
+    dispatch(toggleModal(!id));
+  }, [id]);
 
   return (
     <div className={style.container}>
-      <Switch>
-        <Route path="/sign">
-          <Sign />
-        </Route>
-
-        <Route path="/room/:id">
-          {!user.id ? <Redirect to="/sign" /> : <Chat />}
-        </Route>
-        <Route exact>
-          {!user.id ? <Redirect to="/sign" /> : <Redirect to={`/room/${id}`} />}
-        </Route>
-      </Switch>
+      {isModalActive && <Modal socket={socket} />}
+      <Chat socket={socket}/>
     </div>
   );
 }
