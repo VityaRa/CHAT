@@ -45,9 +45,6 @@ export const Sign = () => {
       </Row>
       <Row align="stretch" className={style.button}>
         <Col>
-          <Link onClick={joinChat} to="/">
-            Войти
-          </Link>
           <Button onClick={joinChat}>Войти</Button>
         </Col>
       </Row>
