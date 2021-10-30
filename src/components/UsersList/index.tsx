@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Socket } from "socket.io-client";
 import { usersList } from "../../utils/constants";
@@ -13,12 +13,19 @@ export interface IProps {
 const UsersList = ({ socket }: IProps) => {
   const [userList, setUserList] = useState<IUser[]>([]);
 
-  socket.on("new_connection", (data: IUser) => {
-    setUserList([...userList, data])
+  socket.on("new_connection", (user: IUser) => {
+    setUserList([...userList, user]);
   });
 
   socket.on("end_connection", (data: string) => {
-    setUserList(userList.filter(user => user.id !== data))
+    setUserList(userList.filter((user) => user.id !== data));
+  });
+
+  socket.on("user_list", (users: IUser[]) => {
+    setUserList([
+      ...userList,
+      ...users.filter((user) => user.id !== socket.id)
+    ]);
   });
 
   return (
@@ -38,4 +45,4 @@ const UsersList = ({ socket }: IProps) => {
   );
 };
 
-export default React.memo(UsersList) 
+export default React.memo(UsersList);
