@@ -1,5 +1,7 @@
 import classNames from "classnames";
 import React from "react";
+import { useAppSelector } from "../../app/hooks";
+import { RootState } from "../../app/store";
 import { IMessage } from "../../utils/types";
 import style from "./style.module.scss";
 
@@ -8,12 +10,14 @@ interface IProps {
 }
 
 export const Message = ({ _message }: IProps) => {
-  const { name, userId, date, message } = _message;
-
+  const { date, message } = _message;
+  const { name, id } = _message.user;
+  const currentId = useAppSelector((state: RootState) => state.app.id);
+  
   return (
     <div
       className={classNames(style.container, {
-        [style.active]: userId === "2"
+        [style.active]: currentId === id
       })}
     >
       <div className={style.inner}>
