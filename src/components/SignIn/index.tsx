@@ -1,11 +1,13 @@
 import { Button, Col, Input, PageHeader, Row } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, NavLink, useHistory } from "react-router-dom";
+import { Link, NavLink, useHistory, useLocation } from "react-router-dom";
 import openSocket, { Socket } from "socket.io-client";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { setRoom, setUser } from "../../app/reducers/app";
 import { RootState } from "../../app/store";
+import { useRoom } from "../../utils/hooks/useRoom";
+import { IUser } from "../../utils/types";
 import style from "./style.module.scss";
 
 export interface IProps {
@@ -17,23 +19,23 @@ export const Sign = ({ socket }: IProps) => {
   const [name, setName] = useState("");
 
   const history = useHistory();
+  const roomId = useRoom();
 
-  const createChat = () => {
+  const login = () => {
     if (name.trim()) {
-
-      const userData = {
-        name,
-        id: socket.id,
-      };
-
-      dispatch(setUser(userData));
-
-      socket.emit("create_room", userData).on("send_room_id", (data: {id: string}) => {
-        dispatch(setRoom(data.id));
-        history.push(`/${data.id}`);
-      });
-
-      setName("");
+      const user: IUser = { name, id: socket.id };
+      dispatch(setUser(user));
+      if (roomId) {
+        socket.emit("join_room", {
+          user,
+          roomId,
+        });
+      } else {
+        socket.emit("create_room", user).on("room_id", (roomId: string) => {
+          setName("");
+          history.push(roomId);
+        });
+      }
     }
   };
 
@@ -56,7 +58,7 @@ export const Sign = ({ socket }: IProps) => {
       </Row>
       <Row align="stretch" className={style.button}>
         <Col>
-          <Button onClick={createChat}>Войти</Button>
+          <Button onClick={login}>Войти</Button>
         </Col>
       </Row>
     </div>
