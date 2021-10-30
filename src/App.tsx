@@ -8,7 +8,7 @@ import { Modal } from "./components/Modal";
 import { toggleModal } from "./app/reducers/app";
 
 //Connecting to socket server
-const socket = openSocket("http://localhost:4000");
+const socket = openSocket("https://desolate-refuge-96015.herokuapp.com/");
 
 export const App = () => {
   const { id, isModalActive } = useAppSelector((state: RootState) => state.app);
