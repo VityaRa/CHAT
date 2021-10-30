@@ -12,7 +12,7 @@ import { toggleModal } from "./app/reducers/app";
 const socket = openSocket("http://localhost:4000");
 
 function App() {
-  const { id, roomId, name, isModalActive } = useAppSelector(
+  const { id, isModalActive } = useAppSelector(
     (state: RootState) => state.app
   );
   const dispatch = useAppDispatch();
