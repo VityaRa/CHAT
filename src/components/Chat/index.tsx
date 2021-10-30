@@ -1,14 +1,15 @@
 import { Button, Input } from "antd";
 import { useEffect, useState } from "react";
-import { useHistory, useLocation, useParams } from "react-router";
+import { useHistory } from "react-router";
 import { Socket } from "socket.io-client";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { setRoom, setUser } from "../../app/reducers/app";
+import { setUser } from "../../app/reducers/app";
 import { RootState } from "../../app/store";
-import { IMessage, IUser } from "../../utils/types";
+import { IMessage } from "../../utils/types";
 import { Message } from "../Message";
 import UsersList from "../UsersList";
 import style from "./style.module.scss";
+
 const { TextArea } = Input;
 
 export interface IProps {
@@ -23,6 +24,7 @@ export const Chat = ({ socket }: IProps) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
+  //Send message to other users
   const sendMessage = () => {
     if (message.trim()) {
       const user = { name, id: socket.id };
@@ -31,6 +33,7 @@ export const Chat = ({ socket }: IProps) => {
     }
   };
 
+  //Get message from other users
   socket.on("on_message", (message: IMessage) => {
     const newMessage: IMessage = {
       user: message.user,
@@ -40,19 +43,20 @@ export const Chat = ({ socket }: IProps) => {
     setMessages([...messages, newMessage]);
   });
 
+  //On connection, setting messageList
   socket.on("message_list", (messages: IMessage[]) => {
     setMessages([...messages]);
   });
 
-  socket.on("get_users", (data: IUser[]) => {
-    console.log(data);
-  });
-
-  socket.on("error_inactive_chat", (error_msg: string) => {
-    alert(error_msg);
-    history.push("/");
-    dispatch(setUser({ id: "", name: "" }));
-  });
+  //If there is no chat, alert error and go to /
+  useEffect(() => {
+    socket.on("error_inactive_chat", (error_msg: string) => {
+      alert(error_msg);
+      history.push("/");
+      dispatch(setUser({ id: "", name: "" }));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={style.wrapper}>

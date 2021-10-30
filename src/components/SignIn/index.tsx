@@ -1,11 +1,9 @@
-import { Button, Col, Input, PageHeader, Row } from "antd";
+import { Button, Col, Input, Row } from "antd";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, NavLink, useHistory, useLocation } from "react-router-dom";
-import openSocket, { Socket } from "socket.io-client";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { setRoom, setUser } from "../../app/reducers/app";
-import { RootState } from "../../app/store";
+import { useHistory } from "react-router-dom";
+import { Socket } from "socket.io-client";
+import { useAppDispatch } from "../../app/hooks";
+import { setUser } from "../../app/reducers/app";
 import { useRoom } from "../../utils/hooks/useRoom";
 import { IUser } from "../../utils/types";
 import style from "./style.module.scss";
@@ -26,11 +24,13 @@ export const Sign = ({ socket }: IProps) => {
       const user: IUser = { name, id: socket.id };
       dispatch(setUser(user));
       if (roomId) {
+        //roomId is defined, so try to connect
         socket.emit("join_room", {
           user,
-          roomId,
+          roomId
         });
       } else {
+        //no room id provided or user in root ("/"), so create room
         socket.emit("create_room", user).on("room_id", (roomId: string) => {
           setName("");
           history.push(roomId);

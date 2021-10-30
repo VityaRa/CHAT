@@ -1,8 +1,6 @@
-import { Button } from "antd";
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import { Socket } from "socket.io-client";
-import { usersList } from "../../utils/constants";
 import { IUser } from "../../utils/types";
 import style from "./style.module.scss";
 
@@ -13,14 +11,17 @@ export interface IProps {
 const UsersList = ({ socket }: IProps) => {
   const [userList, setUserList] = useState<IUser[]>([]);
 
+  //When someone joins room, add him to list
   socket.on("new_connection", (user: IUser) => {
     setUserList([...userList, user]);
   });
 
+  //When someone leaves room, remove him from, list
   socket.on("end_connection", (data: string) => {
     setUserList(userList.filter((user) => user.id !== data));
   });
 
+  //On connection, set currently active users, expect user, because "new_connection" doing it
   socket.on("user_list", (users: IUser[]) => {
     setUserList([
       ...userList,
@@ -31,7 +32,6 @@ const UsersList = ({ socket }: IProps) => {
   return (
     <div className={style.container}>
       <h2>Активные пользователи: </h2>
-      {/* <Button onClick={() => {socket.emit("disc", userList[0].id)}}>DELTE</Button> */}
       <div className={style.list}>
         {userList.length
           ? userList.map((user, index) => (

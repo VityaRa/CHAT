@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import React from "react";
 import { useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
 import { IMessage } from "../../utils/types";
@@ -12,11 +11,14 @@ interface IProps {
 export const Message = ({ _message }: IProps) => {
   const { date, message } = _message;
   const { name, id } = _message.user;
+
   const currentId = useAppSelector((state: RootState) => state.app.id);
   
+
   return (
     <div
       className={classNames(style.container, {
+        //If current user id equals user id from message, than it's our message
         [style.active]: currentId === id
       })}
     >
