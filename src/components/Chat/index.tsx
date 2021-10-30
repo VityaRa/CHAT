@@ -1,8 +1,11 @@
 import { Button, Input } from "antd";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 import { Socket } from "socket.io-client";
-import { messages } from "../../utils/constants";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { setRoom, setUser } from "../../app/reducers/app";
+import { RootState } from "../../app/store";
+import { IMessage, IUser } from "../../utils/types";
 import { Message } from "../Message";
 import UsersList from "../UsersList";
 import style from "./style.module.scss";
@@ -13,22 +16,43 @@ export interface IProps {
 }
 
 export const Chat = ({ socket }: IProps) => {
-  const { id } = useParams<{ id: string }>();
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<IMessage[]>([]);
+
+  const { name } = useAppSelector((state: RootState) => state.app);
+  const dispatch = useAppDispatch();
+  const history = useHistory();
 
   const sendMessage = () => {
     if (message.trim()) {
-      //send message
+      const user = { name, id: socket.id };
+      socket.emit("message", { message, user });
+      setMessage("");
     }
   };
 
-  const joinRoom = (roomId: string) => {
-    console.log(id);
-  };
+  socket.on("on_message", (message: IMessage) => {
+    const newMessage: IMessage = {
+      user: message.user,
+      message: message.message,
+      date: message.date
+    };
+    setMessages([...messages, newMessage]);
+  });
 
-  useEffect(() => {
-    joinRoom(id);
-  }, [id]);
+  socket.on("message_list", (messages: IMessage[]) => {
+    setMessages([...messages]);
+  });
+
+  socket.on("get_users", (data: IUser[]) => {
+    console.log(data);
+  });
+
+  socket.on("error_inactive_chat", (error_msg: string) => {
+    alert(error_msg);
+    history.push("/");
+    dispatch(setUser({ id: "", name: "" }));
+  });
 
   return (
     <div className={style.wrapper}>
